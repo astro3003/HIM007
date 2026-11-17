@@ -1,5 +1,5 @@
 import { Currency } from '../types';
-import { CURRENCIES } from '../data/products';
+import { CURRENCIES } from '../catalog/products';
 
 export interface LocationDetectionResult {
   countryName: string;

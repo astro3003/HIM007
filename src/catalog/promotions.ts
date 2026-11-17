@@ -1,0 +1,40 @@
+import { Promotion } from '../types';
+
+export const INITIAL_PROMOTIONS: Promotion[] = [
+  {
+    id: 'promo-welcome-15',
+    code: 'WELCOME15',
+    title: 'First Order Welcome Advantage',
+    description: '15% instant discount on your first HIM — He Is Man formulation order across India.',
+    discountType: 'percentage',
+    discountValue: 15,
+    minOrderValue: 0,
+    isActive: true,
+    timesUsed: 142,
+    isFlashBanner: true,
+  },
+  {
+    id: 'promo-drop-01',
+    code: 'DROP01',
+    title: 'Full Range Launch Allocation',
+    description: 'Instant bundle discount when acquiring multiple HIM daily engineering specifications.',
+    discountType: 'fixed',
+    discountValue: 3,
+    minOrderValue: 10,
+    isActive: true,
+    timesUsed: 68,
+    isFlashBanner: false,
+  },
+  {
+    id: 'promo-heisman-10',
+    code: 'HEISMAN10',
+    title: 'He Is Man Repeat Member Benefit',
+    description: '10% off orders above ₹999 for returning HIM customers.',
+    discountType: 'percentage',
+    discountValue: 10,
+    minOrderValue: 11.8,
+    isActive: true,
+    timesUsed: 94,
+    isFlashBanner: false,
+  },
+];

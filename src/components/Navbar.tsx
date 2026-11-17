@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShoppingBag, Camera } from 'lucide-react';
 import { Currency, ProductCategory } from '../types';
-import { CURRENCIES } from '../data/products';
+import { CURRENCIES } from '../catalog/products';
 import { LocationDetectionResult } from '../utils/locationCurrency';
 import { isAIStudioEditMode } from '../utils/environment';
 

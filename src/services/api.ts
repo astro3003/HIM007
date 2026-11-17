@@ -6,8 +6,8 @@ import {
   SecuritySnapshot,
   SecuritySettings,
 } from '../types';
-import { PRODUCTS } from '../data/products';
-import { INITIAL_PROMOTIONS } from '../data/promotions';
+import { PRODUCTS } from '../catalog/products';
+import { INITIAL_PROMOTIONS } from '../catalog/promotions';
 
 const STORAGE_KEYS = {
   PRODUCTS: 'him_products_db_real_v9',

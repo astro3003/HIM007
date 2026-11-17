@@ -2,8 +2,8 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs/promises';
 import { createServer as createViteServer } from 'vite';
-import { PRODUCTS } from './src/data/products';
-import { INITIAL_PROMOTIONS } from './src/data/promotions';
+import { PRODUCTS } from './src/catalog/products';
+import { INITIAL_PROMOTIONS } from './src/catalog/promotions';
 import {
   initSecuritySubsystem,
   securityHeadersMiddleware,

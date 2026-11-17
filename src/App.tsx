@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Product, CartItem, Order, Currency, ProductCategory, OrderStatus, Promotion } from './types';
-import { PRODUCTS, CURRENCIES } from './data/products';
-import { INITIAL_PROMOTIONS } from './data/promotions';
+import { PRODUCTS, CURRENCIES } from './catalog/products';
+import { INITIAL_PROMOTIONS } from './catalog/promotions';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ProductGrid } from './components/ProductGrid';

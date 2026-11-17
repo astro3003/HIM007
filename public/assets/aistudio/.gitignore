@@ -1,1 +1,3 @@
-*
+# Storefront assets in this folder must be tracked for GitHub/Vercel/Render deployments.
+# Exclude only support error screenshots uploaded during troubleshooting:
+Screenshot_2026-11-18_*.png

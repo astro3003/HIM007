@@ -1,0 +1,7 @@
+# robots.txt for HIM Natural Grooming
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap location
+Sitemap: /sitemap.xml

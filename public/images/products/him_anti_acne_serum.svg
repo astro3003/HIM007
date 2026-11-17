@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient (Subtle Concrete / Window Natural Light) -->
+    <radialGradient id="slateRoomBg" cx="40%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#7B7E82" />
+      <stop offset="35%" stop-color="#55585D" />
+      <stop offset="70%" stop-color="#323438" />
+      <stop offset="100%" stop-color="#1E2024" />
+    </radialGradient>
+
+    <!-- Dark Slate Slab (Table Surface) -->
+    <linearGradient id="slateTable" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#28292D" />
+      <stop offset="30%" stop-color="#1E1F22" />
+      <stop offset="70%" stop-color="#141517" />
+      <stop offset="100%" stop-color="#0B0C0D" />
+    </linearGradient>
+
+    <!-- Amber Glass Dropper Bottle Shading -->
+    <linearGradient id="amberBottle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1C1008" />
+      <stop offset="18%" stop-color="#3A1C0A" />
+      <stop offset="40%" stop-color="#54280E" />
+      <stop offset="55%" stop-color="#321606" />
+      <stop offset="85%" stop-color="#1F0D04" />
+      <stop offset="100%" stop-color="#0E0502" />
+    </linearGradient>
+
+    <!-- Glass Specular Highlight -->
+    <linearGradient id="bottleSheen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="25%" stop-color="#FFFFFF" stop-opacity="0.3" />
+      <stop offset="35%" stop-color="#FFFFFF" stop-opacity="0.6" />
+      <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Box Outer Matte Black Gradient -->
+    <linearGradient id="cartonFront" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#202124" />
+      <stop offset="50%" stop-color="#161719" />
+      <stop offset="100%" stop-color="#0D0E10" />
+    </linearGradient>
+
+    <linearGradient id="cartonSide" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#141416" />
+      <stop offset="100%" stop-color="#09090B" />
+    </linearGradient>
+
+    <linearGradient id="cartonTop" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#222326" />
+      <stop offset="100%" stop-color="#323438" />
+    </linearGradient>
+
+    <!-- Vibrant Signature Orange -->
+    <linearGradient id="himOrange" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF5A26" />
+      <stop offset="100%" stop-color="#FF4010" />
+    </linearGradient>
+
+    <!-- Botanical Leaf Green -->
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#55A038" />
+      <stop offset="50%" stop-color="#3E7D25" />
+      <stop offset="100%" stop-color="#265215" />
+    </linearGradient>
+
+    <!-- Soft Ambient Cast Shadows -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#000000" flood-opacity="0.85" />
+    </filter>
+  </defs>
+
+  <!-- Background Wall with Soft Natural Window Light -->
+  <rect width="800" height="600" fill="url(#slateRoomBg)" />
+
+  <!-- Slate Surface / Table Platform -->
+  <path d="M 0 420 L 800 410 L 800 600 L 0 600 Z" fill="url(#slateTable)" />
+  <!-- Slate Edge / Chipped Texture Highlight -->
+  <path d="M 0 420 Q 200 415 400 416 Q 600 412 800 410" stroke="#3D3F45" stroke-width="2" fill="none" opacity="0.7" />
+
+  <!-- Volcanic pebbles on table behind / around -->
+  <g id="rocks" opacity="0.9">
+    <ellipse cx="100" cy="435" rx="35" ry="18" fill="#151618" stroke="#25262A" stroke-width="1.5" />
+    <ellipse cx="260" cy="432" rx="28" ry="14" fill="#18191B" stroke="#2B2C30" stroke-width="1.5" />
+    <ellipse cx="730" cy="425" rx="42" ry="20" fill="#161719" stroke="#25262A" stroke-width="1.5" />
+  </g>
+
+  <!-- Fresh Botanical Leaves (Left side & Right side) -->
+  <g id="botanicalLeaves">
+    <!-- Left Leaves Branch -->
+    <path d="M 175 365 C 130 330 115 360 145 400 C 175 420 185 390 175 365 Z" fill="url(#leafGrad)" />
+    <path d="M 145 400 Q 160 375 175 365" stroke="#78C255" stroke-width="1.2" fill="none" opacity="0.7" />
+    
+    <path d="M 230 345 C 275 315 285 350 255 385 C 230 405 215 375 230 345 Z" fill="url(#leafGrad)" />
+    <path d="M 255 385 Q 242 362 230 345" stroke="#78C255" stroke-width="1.2" fill="none" opacity="0.7" />
+
+    <path d="M 200 320 C 190 280 225 280 225 320 C 220 345 205 345 200 320 Z" fill="url(#leafGrad)" />
+
+    <!-- Right Leaf Branch -->
+    <path d="M 720 325 C 770 300 780 340 750 370 C 725 390 710 360 720 325 Z" fill="url(#leafGrad)" />
+    <path d="M 750 370 Q 735 345 720 325" stroke="#78C255" stroke-width="1.2" fill="none" opacity="0.7" />
+    <path d="M 700 365 C 670 340 680 380 710 400 C 730 405 720 385 700 365 Z" fill="url(#leafGrad)" />
+  </g>
+
+  <!-- 1. PACKAGING BOX (Right Side) -->
+  <g id="packagingBox" filter="url(#softShadow)">
+    <!-- Top Flap (trapezoid) -->
+    <polygon points="375,150 445,142 610,146 540,154" fill="url(#cartonTop)" />
+
+    <!-- Right Side Panel -->
+    <polygon points="540,154 610,146 610,500 540,510" fill="url(#cartonSide)" />
+
+    <!-- Front Panel (Facing Viewer) -->
+    <polygon points="375,150 540,154 540,510 375,504" fill="url(#cartonFront)" stroke="#2C2E33" stroke-width="0.8" />
+
+    <!-- Box Front Details -->
+    <g transform="translate(390, 175)">
+      <!-- Stylized HIM Logo in Orange -->
+      <g fill="url(#himOrange)">
+        <!-- Custom Stylized H I M from photo -->
+        <path d="M 2 20 L 15 20 L 15 38 C 22 38 28 46 35 46 L 46 46 L 46 20 L 59 20 L 59 75 L 46 75 L 46 56 C 39 56 33 48 26 48 L 15 48 L 15 75 L 2 75 Z" />
+        <rect x="68" y="20" width="13" height="55" />
+        <path d="M 89 20 L 102 20 L 112 48 L 122 20 L 135 20 L 135 75 L 123 75 L 123 44 L 115 65 L 109 65 L 101 44 L 101 75 L 89 75 Z" />
+      </g>
+
+      <!-- Headline: ANTI ACNE SERUM -->
+      <text x="2" y="125" font-family="'Arial Black', 'Helvetica Neue', sans-serif" font-size="21" font-weight="900" fill="url(#himOrange)" letter-spacing="0.5">ANTI ACNE</text>
+      <text x="2" y="148" font-family="'Arial Black', 'Helvetica Neue', sans-serif" font-size="21" font-weight="900" fill="url(#himOrange)" letter-spacing="0.5">SERUM</text>
+
+      <!-- Subtitle: CLARIFYING TREATMENT -->
+      <text x="2" y="174" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="800" fill="url(#himOrange)" letter-spacing="1">CLARIFYING TREATMENT</text>
+
+      <!-- Thin Divider -->
+      <line x1="2" y1="188" x2="135" y2="188" stroke="#383A40" stroke-width="1" />
+
+      <!-- Specs: For All Skin Types -->
+      <text x="2" y="208" font-family="'Helvetica Neue', Arial, sans-serif" font-size="9" font-weight="500" fill="#B0B3BA">For All Skin Types</text>
+
+      <!-- Volume: 1.01 fl oz / 30ml -->
+      <text x="2" y="224" font-family="'Helvetica Neue', Arial, sans-serif" font-size="9" font-weight="600" fill="#B0B3BA">1.01 fl oz / 30ml</text>
+
+      <!-- Active Ingredients Icons (BHA 2% & Niacinamide 4%) -->
+      <g transform="translate(85, 202)">
+        <!-- Droplet Icon -->
+        <path d="M 10 2 C 10 2 5 9 5 12 C 5 15 7 17 10 17 C 13 17 15 15 15 12 C 15 9 10 2 10 2 Z" fill="none" stroke="url(#himOrange)" stroke-width="1.2" />
+        <text x="10" y="25" font-family="'Helvetica Neue', Arial, sans-serif" font-size="6.5" font-weight="700" fill="#E84A26" text-anchor="middle">BHA 2%</text>
+      </g>
+
+      <g transform="translate(122, 202)">
+        <!-- Molecule Ring Icon -->
+        <circle cx="10" cy="10" r="5" fill="none" stroke="url(#himOrange)" stroke-width="1.2" />
+        <circle cx="15" cy="5" r="2" fill="url(#himOrange)" />
+        <text x="10" y="25" font-family="'Helvetica Neue', Arial, sans-serif" font-size="6" font-weight="700" fill="#E84A26" text-anchor="middle">Niacinamide 4%</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- 2. DROPPER BOTTLE (Left Side) -->
+  <g id="dropperBottle" filter="url(#softShadow)">
+    <!-- Dropper Bulb (Rubber Top) -->
+    <path d="M 285 170 C 275 170 265 180 265 200 C 265 220 270 230 270 235 L 305 235 C 305 230 310 220 310 200 C 310 180 300 170 285 170 Z" fill="#18191B" stroke="#0E0F10" stroke-width="1.5" />
+    
+    <!-- Ribbed Collar / Ring Cap -->
+    <rect x="264" y="235" width="48" height="15" rx="2" fill="#242528" stroke="#121315" stroke-width="1" />
+    <rect x="262" y="250" width="52" height="35" rx="3" fill="#1C1D1F" stroke="#0E0F10" stroke-width="1" />
+    <!-- Ridges on Collar -->
+    <line x1="270" y1="250" x2="270" y2="285" stroke="#323336" stroke-width="1.5" />
+    <line x1="276" y1="250" x2="276" y2="285" stroke="#323336" stroke-width="1.5" />
+    <line x1="282" y1="250" x2="282" y2="285" stroke="#323336" stroke-width="1.5" />
+    <line x1="288" y1="250" x2="288" y2="285" stroke="#323336" stroke-width="1.5" />
+    <line x1="294" y1="250" x2="294" y2="285" stroke="#323336" stroke-width="1.5" />
+    <line x1="300" y1="250" x2="300" y2="285" stroke="#323336" stroke-width="1.5" />
+    <line x1="306" y1="250" x2="306" y2="285" stroke="#323336" stroke-width="1.5" />
+
+    <!-- Bottle Neck -->
+    <rect x="272" y="285" width="32" height="12" fill="url(#amberBottle)" />
+
+    <!-- Bottle Body (Amber Glass) -->
+    <!-- Rounded Shoulder to Cylindrical Body -->
+    <path d="M 272 295 C 250 300 242 320 242 340 L 242 505 C 242 515 250 518 288 518 C 326 518 334 515 334 505 L 334 340 C 334 320 326 300 304 295 Z" fill="url(#amberBottle)" stroke="#1F0D04" stroke-width="1" />
+    <!-- Glass Highlight Sheen -->
+    <path d="M 252 320 L 252 505 C 252 510 258 514 265 514 L 265 315 Z" fill="url(#bottleSheen)" opacity="0.6" />
+
+    <!-- Matte Black Bottle Label -->
+    <rect x="244" y="342" width="88" height="125" rx="2" fill="#121315" stroke="#25262A" stroke-width="0.8" />
+
+    <!-- Label Content -->
+    <g transform="translate(250, 350)">
+      <!-- Mini HIM Stylized Logo -->
+      <g fill="url(#himOrange)" transform="scale(0.55)">
+        <path d="M 2 20 L 15 20 L 15 38 C 22 38 28 46 35 46 L 46 46 L 46 20 L 59 20 L 59 75 L 46 75 L 46 56 C 39 56 33 48 26 48 L 15 48 L 15 75 L 2 75 Z" />
+        <rect x="68" y="20" width="13" height="55" />
+        <path d="M 89 20 L 102 20 L 112 48 L 122 20 L 135 20 L 135 75 L 123 75 L 123 44 L 115 65 L 109 65 L 101 44 L 101 75 L 89 75 Z" />
+      </g>
+
+      <!-- Label Texts -->
+      <text x="38" y="60" font-family="'Arial Black', sans-serif" font-size="9" font-weight="900" fill="url(#himOrange)" text-anchor="middle">ANTI ACNE</text>
+      <text x="38" y="71" font-family="'Arial Black', sans-serif" font-size="9" font-weight="900" fill="url(#himOrange)" text-anchor="middle">SERUM</text>
+      
+      <text x="38" y="85" font-family="'Helvetica Neue', Arial, sans-serif" font-size="6.5" font-weight="700" fill="#E84A26" text-anchor="middle">Clarifying Treatment</text>
+      <text x="38" y="105" font-family="'Helvetica Neue', Arial, sans-serif" font-size="6.5" font-weight="600" fill="#9DA0A8" text-anchor="middle">30ml</text>
+    </g>
+  </g>
+</svg>

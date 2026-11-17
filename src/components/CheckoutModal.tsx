@@ -51,22 +51,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const deliveryFee = deliverySpeed === 'express' ? 12 : (isFreeStandard ? 0 : 8);
   const totalAmount = Math.max(0, subtotal - discountAmount + deliveryFee);
 
-  const handleAutofill = () => {
-    setFullName('Vikram Malhotra');
-    setEmail('v.malhotra@grooming.in');
-    setPhone('+91 98201 44100');
-    setAddress('Bandra West, Linking Road');
-    setCity('Mumbai');
-    setStateCode('Maharashtra');
-    setPostalCode('400050');
-    setCountry('India');
-    setErrorMsg('');
-  };
-
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !email || !address || !city || !postalCode) {
-      setErrorMsg('Please complete all required shipping fields or click Autofill.');
+      setErrorMsg('Please complete all required shipping fields.');
       return;
     }
 
@@ -161,14 +149,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
 
           <div className="flex items-center space-x-3">
-            <button
-              type="button"
-              onClick={handleAutofill}
-              className="px-3 py-1.5 bg-[#1C202B] hover:bg-[#FF4D00] text-white transition-colors text-xs font-semibold border border-white/15 rounded-md flex items-center cursor-pointer"
-            >
-              <Zap className="w-3 h-3 mr-1 text-[#FF4D00]" />
-              Autofill Demo Data
-            </button>
             <button
               type="button"
               onClick={onClose}

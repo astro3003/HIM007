@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { ArrowRight, Check, Minus, ZoomIn, ZoomOut } from 'lucide-react';
 import { Product, Currency } from '../types';
 import { formatPrice } from '../utils/locationCurrency';
+import { isSoapAvailableForSale } from '../utils/sellable';
 
 interface ScienceAndEvidenceLabProps {
   products: Product[];
@@ -336,7 +337,9 @@ export const ScienceAndEvidenceLab: React.FC<ScienceAndEvidenceLabProps> = ({
                       onClick={() => onAddToCart(activeEvidenceProduct)}
                       className="py-3 px-5 bg-[#14171F] hover:bg-[#1C202B] border border-white/15 text-white text-xs font-semibold rounded-md transition-colors whitespace-nowrap tabular-nums cursor-pointer"
                     >
-                      Add · {formatPrice(activeEvidenceProduct.price, currency)}
+                      {isSoapAvailableForSale(activeEvidenceProduct)
+                        ? `Add · ${formatPrice(activeEvidenceProduct.price, currency)}`
+                        : 'Request Free Sample'}
                     </button>
                   </div>
                 </div>

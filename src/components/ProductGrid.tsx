@@ -127,13 +127,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
           <div className="mb-10 bg-[#14171F] border border-white/10 rounded-xl p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1.5">
               <div className="font-mono text-[11px] uppercase tracking-wider text-[#FF4D00] font-semibold">
-                Full 9-Drop Collection · Save 15% With Code WELCOME15
+                3 Soap Bars Now On Sale · Save 15% With Code WELCOME15
               </div>
               <h3 className="font-editorial text-xl sm:text-2xl font-semibold text-white">
-                The Complete {products.length}-Piece HIM Daily Rotation
+                The 3-Soap HIM Shower Rotation
               </h3>
               <p className="text-xs sm:text-sm text-[#C8C4BC] max-w-2xl">
-                Cleanse post-gym sweat, fade sun tan, stop breakouts, style zero-shine hair, nourish beard roots, and lock an all-night scent.
+                Currently selling our Scrub Bar, Ayurvedic De-Tan Soap, and Anti-Acne Clarifying Soap directly. Request a free home sample on any of our other 6 formulas below.
               </p>
             </div>
 
@@ -153,7 +153,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                 onClick={onAcquireKit}
                 className="px-5 py-3 bg-[#FF4D00] hover:bg-[#E03E1A] text-white text-xs font-semibold rounded-md transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
               >
-                <span>Lock Full Rotation</span>
+                <span>Add All 3 Soaps</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

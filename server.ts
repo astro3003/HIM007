@@ -140,6 +140,12 @@ async function startServer() {
   // ================= AUTHENTICATION ROUTES =================
 
   app.post('/api/auth/login', loginLimiter, async (req, res) => {
+    if (process.env.ALLOW_LIVE_ADMIN !== 'true') {
+      return res.status(403).json({
+        success: false,
+        error: 'Live storefront is locked in read-only mode.',
+      });
+    }
     const { pin } = req.body || {};
     const result = await handleAdminLogin(req, pin);
     if (!result.ok) {
@@ -509,6 +515,56 @@ async function startServer() {
 
     await saveStoreState();
     res.json({ success: true, order: ord });
+  });
+
+  // Free Home Sample Requests for Non-Soap Formulations
+  app.post('/api/sample-requests', checkoutLimiter, async (req, res) => {
+    const body = req.body || {};
+    const fullName = stripHtmlTags(String(body.fullName || ''), 120);
+    const phone = stripHtmlTags(String(body.phone || ''), 40);
+    const email = stripHtmlTags(String(body.email || ''), 120);
+    const address = stripHtmlTags(String(body.address || ''), 280);
+    const city = stripHtmlTags(String(body.city || ''), 80);
+    const state = stripHtmlTags(String(body.state || ''), 80);
+    const postalCode = stripHtmlTags(String(body.postalCode || ''), 20);
+    const productId = stripHtmlTags(String(body.productId || ''), 80);
+    const productName = stripHtmlTags(String(body.productName || ''), 140);
+    const requestId = stripHtmlTags(String(body.requestId || `SMP-${Date.now()}`), 40);
+
+    if (!fullName || !phone || !email || !address || !city || !postalCode) {
+      return res.status(400).json({ success: false, error: 'All contact and home delivery address fields are required.' });
+    }
+
+    const entry = {
+      requestId,
+      productId,
+      productName,
+      fullName,
+      phone,
+      email,
+      address,
+      city,
+      state,
+      postalCode,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const sampleFile = path.join(DATA_DIR, 'sample-requests.json');
+      await fs.mkdir(DATA_DIR, { recursive: true });
+      let list: any[] = [];
+      try {
+        const raw = await fs.readFile(sampleFile, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) list = parsed;
+      } catch {}
+      list.unshift(entry);
+      await fs.writeFile(sampleFile, JSON.stringify(list.slice(0, 1000), null, 2), 'utf-8');
+    } catch {
+      // Safe fallback on read-only serverless environments
+    }
+
+    res.json({ success: true, sampleRequest: entry });
   });
 
   // Persistent Custom Images Registry for All Sections

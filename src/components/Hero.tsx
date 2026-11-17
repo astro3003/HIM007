@@ -3,6 +3,7 @@ import { ArrowRight, Camera, Upload } from 'lucide-react';
 import { Currency, Product, ProductCategory } from '../types';
 import { formatPrice, LocationDetectionResult } from '../utils/locationCurrency';
 import { isAIStudioEditMode } from '../utils/environment';
+import { isSoapAvailableForSale } from '../utils/sellable';
 
 interface HeroProps {
   onExploreClick: () => void;
@@ -196,7 +197,9 @@ export const Hero: React.FC<HeroProps> = ({
                       onClick={() => onAddToCart(featuredHeroProduct)}
                       className="px-4 py-2 bg-white/10 hover:bg-[#FF4D00] border border-white/15 hover:border-[#FF4D00] text-white text-xs font-semibold rounded-md transition-colors tabular-nums cursor-pointer"
                     >
-                      Quick Add · {featuredHeroProduct.name.replace("Men's ", '')} ({formatPrice(featuredHeroProduct.price, currency)})
+                      {isSoapAvailableForSale(featuredHeroProduct)
+                        ? `Quick Add · ${featuredHeroProduct.name.replace("Men's ", '')} (${formatPrice(featuredHeroProduct.price, currency)})`
+                        : `Free Sample · ${featuredHeroProduct.name.replace("Men's ", '')}`}
                     </button>
                   )}
                 </div>

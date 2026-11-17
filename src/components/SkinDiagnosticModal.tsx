@@ -3,6 +3,7 @@ import { X, Sparkles, Check, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Product, Currency } from '../types';
 import { formatPrice } from '../utils/locationCurrency';
 import { ProductArtwork } from './ProductArtwork';
+import { isSoapAvailableForSale } from '../utils/sellable';
 
 interface SkinDiagnosticModalProps {
   isOpen: boolean;
@@ -84,7 +85,12 @@ export const SkinDiagnosticModal: React.FC<SkinDiagnosticModalProps> = ({
   const bundleTotal = Math.round(subtotal * (1 - bundleDiscount));
 
   const handleAddAllToBag = () => {
-    recommendedRoutine.forEach((p) => onAddToCart(p));
+    const soaps = recommendedRoutine.filter(isSoapAvailableForSale);
+    if (soaps.length > 0) {
+      soaps.forEach((p) => onAddToCart(p));
+    } else if (recommendedRoutine[0]) {
+      onAddToCart(recommendedRoutine[0]);
+    }
     setAddedAll(true);
     setTimeout(() => {
       onClose();
@@ -296,7 +302,7 @@ export const SkinDiagnosticModal: React.FC<SkinDiagnosticModalProps> = ({
                         onClick={() => onAddToCart(prod)}
                         className="text-[11px] font-semibold text-[#FF4D00] hover:text-white transition-colors cursor-pointer"
                       >
-                        + Add item
+                        {isSoapAvailableForSale(prod) ? '+ Add to Bag' : '+ Free Sample'}
                       </button>
                     </div>
                   </div>

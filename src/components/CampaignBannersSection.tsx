@@ -3,6 +3,7 @@ import { ArrowRight, Star } from 'lucide-react';
 import { Currency, Product, ProductCategory } from '../types';
 import { formatPrice } from '../utils/locationCurrency';
 import { ProductArtwork } from './ProductArtwork';
+import { isSoapAvailableForSale } from '../utils/sellable';
 
 interface CampaignBannersSectionProps {
   products: Product[];
@@ -187,7 +188,7 @@ export const CampaignBannersSection: React.FC<CampaignBannersSectionProps> = ({
                         onClick={() => onAddToCart(entry.product)}
                         className="px-4 py-2 bg-[#FF4D00] hover:bg-[#E03E1A] text-white text-xs font-semibold rounded-md transition-colors cursor-pointer whitespace-nowrap"
                       >
-                        Add
+                        {isSoapAvailableForSale(entry.product) ? 'Add' : 'Free Sample'}
                       </button>
                     </div>
                   </div>

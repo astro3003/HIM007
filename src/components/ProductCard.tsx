@@ -1,9 +1,10 @@
 import React from 'react';
-import { Star, Plus, Check, Camera, Upload, Edit3 } from 'lucide-react';
+import { Star, Plus, Check, Camera, Upload, Edit3, Gift } from 'lucide-react';
 import { Product, Currency } from '../types';
 import { ProductArtwork } from './ProductArtwork';
 import { formatPrice } from '../utils/locationCurrency';
 import { isAIStudioEditMode } from '../utils/environment';
+import { isSoapAvailableForSale } from '../utils/sellable';
 
 interface ProductCardProps {
   product: Product;
@@ -36,8 +37,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const formattedComparePrice = product.compareAtPrice
     ? formatPrice(product.compareAtPrice, currency)
     : null;
-  const isOutOfStock = !product.inStock || product.stockUnits <= 0;
-  const isLowStock = !isOutOfStock && product.stockUnits <= 8;
+  const isSoapSale = isSoapAvailableForSale(product);
+  const isOutOfStock = isSoapSale && (!product.inStock || product.stockUnits <= 0);
+  const isLowStock = isSoapSale && !isOutOfStock && product.stockUnits <= 8;
 
   const handleDirectFile = (file: File) => {
     if (!canEdit || !file.type.startsWith('image/')) return;
@@ -209,7 +211,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               )}
             </div>
 
-            {isLowStock ? (
+            {!isSoapSale ? (
+              <span className="text-[11px] font-mono text-[#FF4D00] font-semibold">
+                Free Home Sample
+              </span>
+            ) : isLowStock ? (
               <span className="text-[11px] font-mono text-[#FF4D00] font-medium tabular-nums">
                 {product.stockUnits} units left
               </span>
@@ -231,12 +237,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   type="button"
                   onClick={() => onAddToCart(product)}
                   className={`py-2.5 px-3 text-xs font-semibold rounded-md transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer ${
-                    isInCart
+                    isSoapSale && isInCart
                       ? 'bg-[#1F7A4C] text-white'
                       : 'bg-[#1C202B] hover:bg-white text-white hover:text-[#0B0D12] border border-white/15'
                   }`}
                 >
-                  {isInCart ? (
+                  {!isSoapSale ? (
+                    <>
+                      <Gift className="w-3.5 h-3.5 text-[#FF4D00]" />
+                      <span>Free Sample</span>
+                    </>
+                  ) : isInCart ? (
                     <>
                       <Check className="w-3.5 h-3.5" />
                       <span>In Bag</span>

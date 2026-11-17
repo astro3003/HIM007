@@ -18,6 +18,7 @@ import { SkinDiagnosticModal } from './components/SkinDiagnosticModal';
 import { AdminDashboardModal, AdminTab } from './components/AdminDashboardModal';
 import { AdminAuthModal } from './components/AdminAuthModal';
 import { PrePublishMediaManagerModal } from './components/PrePublishMediaManagerModal';
+import { SampleRequestModal } from './components/SampleRequestModal';
 import { Footer } from './components/Footer';
 import { 
   detectLocationAndCurrency, 
@@ -28,6 +29,7 @@ import {
 import { backendService } from './services/api';
 import { Zap, Camera, ShieldAlert } from 'lucide-react';
 import { isAIStudioEditMode } from './utils/environment';
+import { isSoapAvailableForSale, SELLABLE_SOAP_IDS } from './utils/sellable';
 
 const FREE_SHIPPING_THRESHOLD_BASE = 50; // USD
 
@@ -70,11 +72,14 @@ export default function App() {
   const [adminInitialTab, setAdminInitialTab] = useState<AdminTab>('inventory');
   const [unreadSecurityAlerts, setUnreadSecurityAlerts] = useState<number>(0);
 
-  // Cart state persisted to localStorage
+  // Cart state persisted to localStorage (currently restricted to the 3 sellable soaps)
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('him_cart_items');
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? (JSON.parse(saved) as CartItem[]) : [];
+      return Array.isArray(parsed)
+        ? parsed.filter((item) => item?.product?.id && SELLABLE_SOAP_IDS.has(item.product.id))
+        : [];
     } catch {
       return [];
     }
@@ -165,6 +170,7 @@ export default function App() {
   const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
   const [isMediaManagerOpen, setIsMediaManagerOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [sampleRequestProduct, setSampleRequestProduct] = useState<Product | null>(null);
   const [adminEditProductId, setAdminEditProductId] = useState<string | null>(null);
 
   // URL Hash Synchronizer for Dedicated Product Detail Pages (#product-[id])
@@ -379,8 +385,13 @@ export default function App() {
     }
   }, [cart]);
 
-  // Cart operations
+  // Cart operations (currently only the 3 soaps can be added to cart; other products open Free Sample Request)
   const handleAddToCart = (product: Product, quantity = 1, selectedShade?: string) => {
+    if (!isSoapAvailableForSale(product)) {
+      setSampleRequestProduct(product);
+      return;
+    }
+
     if (!product.inStock || product.stockUnits <= 0) {
       showToast(`SPEC ${product.specCode} IS CURRENTLY DEPLETED`);
       return;
@@ -399,7 +410,7 @@ export default function App() {
       }
       return [...prev, { product, quantity, selectedShade }];
     });
-    showToast(`ACQUIRED [${product.name}${selectedShade ? ` • ${selectedShade}` : ''}] TO LOADOUT`);
+    showToast(`ADDED [${product.name}${selectedShade ? ` • ${selectedShade}` : ''}] TO BAG`);
   };
 
   const handleUpdateQuantity = (productId: string, delta: number) => {
@@ -427,8 +438,12 @@ export default function App() {
     showToast('SPEC REMOVED FROM LOADOUT');
   };
 
-  // Quick Buy triggers instant add to cart and opens 1-click Express Checkout
+  // Quick Buy triggers instant add to cart for soaps, or Free Sample Request for other products
   const handleQuickBuy = (product: Product, quantity = 1, selectedShade?: string) => {
+    if (!isSoapAvailableForSale(product)) {
+      setSampleRequestProduct(product);
+      return;
+    }
     if (!product.inStock || product.stockUnits <= 0) {
       showToast(`SPEC ${product.specCode} IS CURRENTLY DEPLETED`);
       return;
@@ -438,12 +453,12 @@ export default function App() {
     setIsCheckoutOpen(true);
   };
 
-  // Acquire Kit (All active products with bundle savings)
+  // Acquire 3-Soap Collection
   const handleAcquireKit = () => {
     setCart((prev) => {
       const newItems: CartItem[] = [...prev];
       products.forEach((p) => {
-        if (p.inStock && p.stockUnits > 0) {
+        if (isSoapAvailableForSale(p) && p.inStock && p.stockUnits > 0) {
           const existing = newItems.find((i) => i.product.id === p.id);
           if (existing) {
             existing.quantity = Math.max(1, existing.quantity);
@@ -454,10 +469,7 @@ export default function App() {
       });
       return newItems;
     });
-    // apply DROP01 code for instant bundle discount
-    setDiscountCode('DROP01');
-    setDiscountAmount(25);
-    showToast('FULL 7-PIECE DROP 01 KIT ADDED // BUNDLE DISCOUNT APPLIED');
+    showToast('ALL 3 HIM SOAPS ADDED TO BAG');
     setIsCartOpen(true);
   };
 
@@ -667,8 +679,6 @@ export default function App() {
 
   const cartProductIds = new Set(cart.map((i) => i.product.id));
   const cartItemCount = cart.reduce((sum, i) => sum + i.quantity, 0);
-  const lowStockCount = products.filter((p) => p.stockUnits <= (p.lowStockThreshold || 10)).length;
-  const isEditMode = isAIStudioEditMode(isAdminAuthenticated);
 
   return (
     <div className="min-h-screen bg-[#0B0D12] text-[#F6F4F0] font-sans antialiased selection:bg-[#FF4D00] selection:text-white">
@@ -690,52 +700,20 @@ export default function App() {
         onSelectCategory={setSelectedCategory}
         onOpenIngredients={() => setIsIngredientsOpen(true)}
         locationInfo={locationInfo}
-        onOpenAdmin={handleOpenAdminPortal}
-        isAdminActive={isAdminAuthenticated}
-        onOpenMediaManager={() => setIsMediaManagerOpen(true)}
-        customImagesCount={Object.keys(customImages).length}
-        lowStockCount={lowStockCount}
         onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
         onTriggerVoice={handleTriggerVoice}
         isVoicePlaying={isVoicePlaying}
         onNavigateHome={handleCloseProduct}
       />
 
-      {/* Authenticated Owner Security Alert Strip (Hidden from public storefront visitors) */}
-      {isAdminAuthenticated && unreadSecurityAlerts > 0 && (
-        <div className="bg-red-950/90 border-b border-red-500/40 text-red-100 px-4 py-2 text-xs font-mono">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-[#FF4D00] shrink-0" />
-              <span>
-                <strong>SECURITY ALERT:</strong> {unreadSecurityAlerts} suspicious attempt{unreadSecurityAlerts === 1 ? '' : 's'} detected &amp; blocked by HIM Firewall.
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={handleOpenSecurityShield}
-              className="px-3 py-1 bg-[#FF4D00] hover:bg-[#E03E1A] text-white font-bold rounded-sm text-[11px] uppercase cursor-pointer"
-            >
-              Inspect Attack Log
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* HIM Signal Orange Announcement Banner */}
       {flashBanner.enabled && (
-        <div className="bg-[#FF4D00] text-white px-4 py-2 flex items-center justify-between text-xs font-semibold tracking-wide">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+        <div className="bg-[#FF4D00] text-white px-4 py-2 flex items-center justify-center text-xs font-semibold tracking-wide">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-center">
             <div className="flex items-center space-x-2 truncate">
               <Zap className="w-3.5 h-3.5 fill-white shrink-0" />
               <span className="truncate">{flashBanner.text}</span>
             </div>
-            <button
-              onClick={handleOpenAdminPortal}
-              className="hidden sm:inline-flex text-[10px] px-2.5 py-0.5 bg-black/20 hover:bg-black/35 text-white rounded-sm uppercase shrink-0 ml-4 font-bold transition-colors cursor-pointer"
-            >
-              Edit in HQ
-            </button>
           </div>
         </div>
       )}
@@ -749,12 +727,6 @@ export default function App() {
           onQuickBuy={(product, qty, shade) => handleQuickBuy(product, qty, shade)}
           onSelectProduct={handleOpenProduct}
           allProducts={products}
-          isAdminActive={isAdminAuthenticated}
-          onEditProduct={(product) => {
-            setAdminEditProductId(product.id);
-            setIsAdminOpen(true);
-          }}
-          onOpenPhotoUpload={isEditMode ? () => setIsMediaManagerOpen(true) : undefined}
         />
       ) : (
         <main>
@@ -774,11 +746,9 @@ export default function App() {
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
             locationInfo={locationInfo}
-            isAdminActive={isAdminAuthenticated}
             onTriggerVoice={handleTriggerVoice}
             isVoicePlaying={isVoicePlaying}
             customImages={customImages}
-            onUpdateImage={handleUpdateCustomImage}
           />
 
           {/* The HIM Product Grid (All 9 Live Formulations) */}
@@ -792,13 +762,6 @@ export default function App() {
             onOpenDetails={handleOpenProduct}
             onAcquireKit={handleAcquireKit}
             cartProductIds={cartProductIds}
-            isAdminActive={isAdminAuthenticated}
-            onOpenPhotoUpload={isEditMode ? () => setIsMediaManagerOpen(true) : undefined}
-            onSaveCustomPhoto={(productId, dataUrl) => handleUpdateCustomImage(`prod-${productId}`, dataUrl)}
-            onEditProduct={(product) => {
-              setAdminEditProductId(product.id);
-              setIsAdminOpen(true);
-            }}
           />
 
           {/* HIM — He Is Man Campaign Banners */}
@@ -823,9 +786,7 @@ export default function App() {
             products={products}
             onOpenProduct={handleOpenProduct}
             onQuickBuy={(product) => handleQuickBuy(product, 1)}
-            isAdminActive={isAdminAuthenticated}
             customImages={customImages}
-            onUpdateImage={handleUpdateCustomImage}
           />
 
           {/* SECTION 4: WE GET IT HERE'S THE DEAL (Interactive FAQ & Complete Range Showcase) */}
@@ -841,11 +802,10 @@ export default function App() {
         </main>
       )}
 
-      {/* Technical Footer with HQ Console Trigger */}
+      {/* Technical Footer */}
       <Footer
         onOpenIngredients={() => setIsIngredientsOpen(true)}
         onOpenTracking={() => setIsTrackingOpen(true)}
-        onOpenAdmin={handleOpenAdminPortal}
       />
 
       {/* Slide-over Cart Drawer */}
@@ -903,74 +863,14 @@ export default function App() {
         onClose={() => setIsIngredientsOpen(false)}
       />
 
-      {/* Server-Verified Admin Auth Modal */}
-      <AdminAuthModal
-        isOpen={isAdminAuthOpen}
-        onClose={() => setIsAdminAuthOpen(false)}
-        onAuthenticated={handleAdminAuthenticated}
-      />
-
-      {/* HIM HQ Command / Backend Operations Portal */}
-      <AdminDashboardModal
-        isOpen={isAdminOpen}
-        onClose={() => {
-          setIsAdminOpen(false);
-          setAdminEditProductId(null);
-        }}
-        onLock={handleAdminLock}
-        onOpenMediaManager={() => {
-          setIsAdminOpen(false);
-          setIsMediaManagerOpen(true);
-        }}
-        products={products}
-        promotions={promotions}
-        orders={orders}
-        currency={currentCurrency}
-        onUpdateProduct={handleUpdateProduct}
-        onAddProduct={handleAddProduct}
-        onDeleteProduct={handleDeleteProduct}
-        onUpdatePromotion={handleUpdatePromotion}
-        onDeletePromotion={handleDeletePromotion}
-        onUpdateOrderStatus={handleUpdateOrderStatus}
-        onResetDefaults={handleResetDefaults}
-        flashBannerEnabled={flashBanner.enabled}
-        flashBannerText={flashBanner.text}
-        onUpdateFlashBanner={handleUpdateFlashBanner}
-        initialEditProductId={adminEditProductId}
-        initialTab={adminInitialTab}
-        unreadSecurityAlerts={unreadSecurityAlerts}
-        onUnreadSecurityAlertsChange={setUnreadSecurityAlerts}
-      />
-
-      {/* Floating Pre-Publish Media Manager Hub Quick-Access Pill (AI Studio Edit Mode Only) */}
-      {isEditMode && (
-        <div className="fixed bottom-5 left-5 z-40">
-          <button
-            onClick={() => setIsMediaManagerOpen(true)}
-            className="flex items-center space-x-2 px-3.5 py-2.5 bg-[#0A0029] hover:bg-[#E31B23] text-white rounded-full text-xs font-bold transition-all shadow-xl hover:shadow-2xl border border-white/20 active:scale-95 group cursor-pointer"
-            title="Change & Upload Every Image Section Before Publishing"
-          >
-            <Camera className="w-4 h-4 text-[#E31B23] group-hover:text-white transition-colors" />
-            <span className="hidden sm:inline">Change Images (Pre-Publish)</span>
-            <span className="sm:hidden">Images</span>
-            {Object.keys(customImages).length > 0 && (
-              <span className="px-1.5 py-0.5 bg-[#E31B23] text-white text-[10px] font-mono rounded-full font-bold">
-                {Object.keys(customImages).length}
-              </span>
-            )}
-          </button>
-        </div>
-      )}
-
-      {/* Centralized Pre-Publish Media Manager Modal */}
-      <PrePublishMediaManagerModal
-        isOpen={isMediaManagerOpen}
-        onClose={() => setIsMediaManagerOpen(false)}
-        customImages={customImages}
-        onUpdateImage={handleUpdateCustomImage}
-        onResetImage={handleResetCustomImage}
-        onResetAll={handleResetAllCustomImages}
-        products={products}
+      {/* Free Home Sample Request Modal for Non-Soap Products */}
+      <SampleRequestModal
+        isOpen={Boolean(sampleRequestProduct)}
+        product={sampleRequestProduct}
+        onClose={() => setSampleRequestProduct(null)}
+        onSubmitted={(productName) =>
+          showToast(`FREE SAMPLE RESERVED FOR ${productName.toUpperCase()}`)
+        }
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft, Star, Check, Plus, Minus, Zap,
-  Leaf, Camera, Edit3, Share2, RefreshCw, Truck
+  Leaf, Camera, Edit3, Share2, RefreshCw, Truck, Gift
 } from 'lucide-react';
 import { Product, Currency, ProductShade } from '../types';
 import { ProductArtwork } from './ProductArtwork';
@@ -10,6 +10,7 @@ import { RealFinishEvidenceModule } from './RealFinishEvidenceModule';
 import { PDPReviewsSection } from './PDPReviewsSection';
 import { formatPrice } from '../utils/locationCurrency';
 import { isAIStudioEditMode } from '../utils/environment';
+import { isSoapAvailableForSale } from '../utils/sellable';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -54,6 +55,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [showStickyBar, setShowStickyBar] = useState(false);
 
   const canEdit = isAIStudioEditMode(isAdminActive);
+  const isSoapSale = isSoapAvailableForSale(product);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -322,8 +324,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               </div>
 
               <div className="text-right text-[11px] text-[#C8C4BC]">
-                <span>Taxes included</span>
-                <span className="block text-[#22C55E] font-semibold">In Stock · Ready to Ship</span>
+                <span>{isSoapSale ? 'Taxes included' : 'Only soaps on sale now'}</span>
+                <span className={`block font-semibold ${isSoapSale ? 'text-[#22C55E]' : 'text-[#FF4D00]'}`}>
+                  {isSoapSale ? 'In Stock · Ready to Ship' : 'Free Home Sample Available'}
+                </span>
               </div>
             </div>
 
@@ -339,63 +343,76 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
             {/* Quantity Stepper & Actions */}
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-mono uppercase tracking-wider text-[#C8C4BC]">
-                  Select Quantity
-                </span>
-                <div className="flex items-center bg-[#14171F] border border-white/15 rounded-md p-1">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-8 h-8 rounded-sm hover:bg-[#1C202B] flex items-center justify-center text-white transition-colors cursor-pointer"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="w-10 text-center text-xs font-bold text-white tabular-nums">
-                    {quantity}
+              {isSoapSale && (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#C8C4BC]">
+                    Select Quantity
                   </span>
+                  <div className="flex items-center bg-[#14171F] border border-white/15 rounded-md p-1">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="w-8 h-8 rounded-sm hover:bg-[#1C202B] flex items-center justify-center text-white transition-colors cursor-pointer"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-10 text-center text-xs font-bold text-white tabular-nums">
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="w-8 h-8 rounded-sm hover:bg-[#1C202B] flex items-center justify-center text-white transition-colors cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isSoapSale ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="w-8 h-8 rounded-sm hover:bg-[#1C202B] flex items-center justify-center text-white transition-colors cursor-pointer"
+                    onClick={handleAdd}
+                    className={`py-3.5 px-6 rounded-md text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 cursor-pointer tabular-nums ${
+                      isAddedFeedback
+                        ? 'bg-[#1F7A4C] text-white'
+                        : 'bg-[#FF4D00] hover:bg-[#E03E1A] text-white'
+                    }`}
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    {isAddedFeedback ? (
+                      <>
+                        <Check className="w-4 h-4 stroke-[3]" />
+                        <span>Added to Bag!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4" />
+                        <span>Add to Bag · {formattedPrice}</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleInstantBuy}
+                    className="py-3.5 px-6 bg-[#14171F] hover:bg-white text-white hover:text-[#0B0D12] border border-white/20 rounded-md text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 cursor-pointer"
+                  >
+                    <Zap className="w-4 h-4 fill-current" />
+                    <span>Instant Checkout</span>
                   </button>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ) : (
                 <button
                   type="button"
                   onClick={handleAdd}
-                  className={`py-3.5 px-6 rounded-md text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 cursor-pointer tabular-nums ${
-                    isAddedFeedback
-                      ? 'bg-[#1F7A4C] text-white'
-                      : 'bg-[#FF4D00] hover:bg-[#E03E1A] text-white'
-                  }`}
+                  className="w-full py-3.5 px-6 bg-[#FF4D00] hover:bg-[#E03E1A] text-white rounded-md text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 cursor-pointer"
                 >
-                  {isAddedFeedback ? (
-                    <>
-                      <Check className="w-4 h-4 stroke-[3]" />
-                      <span>Added to Bag!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4" />
-                      <span>Add to Bag · {formattedPrice}</span>
-                    </>
-                  )}
+                  <Gift className="w-4 h-4" />
+                  <span>Request Free Sample at Your Home</span>
                 </button>
-
-                <button
-                  type="button"
-                  onClick={handleInstantBuy}
-                  className="py-3.5 px-6 bg-[#14171F] hover:bg-white text-white hover:text-[#0B0D12] border border-white/20 rounded-md text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 cursor-pointer"
-                >
-                  <Zap className="w-4 h-4 fill-current" />
-                  <span>Instant Checkout</span>
-                </button>
-              </div>
+              )}
             </div>
 
             {/* Delivery & Assurance */}
@@ -596,8 +613,17 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     }}
                     className="px-3 py-1.5 bg-[#FF4D00] hover:bg-[#E03E1A] text-white text-[11px] font-bold rounded-md transition-colors flex items-center space-x-1 cursor-pointer"
                   >
-                    <Plus className="w-3 h-3" />
-                    <span>Add</span>
+                    {isSoapAvailableForSale(p) ? (
+                      <>
+                        <Plus className="w-3 h-3" />
+                        <span>Add</span>
+                      </>
+                    ) : (
+                      <>
+                        <Gift className="w-3 h-3" />
+                        <span>Sample</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -650,9 +676,18 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 onClick={handleAdd}
                 className="py-2.5 px-5 bg-[#FF4D00] hover:bg-[#E03E1A] text-white text-xs font-bold rounded-md transition-colors flex items-center space-x-1.5 cursor-pointer tabular-nums"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Add to Bag · </span>
-                <span>{formattedPrice}</span>
+                {isSoapSale ? (
+                  <>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Add to Bag · </span>
+                    <span>{formattedPrice}</span>
+                  </>
+                ) : (
+                  <>
+                    <Gift className="w-3.5 h-3.5" />
+                    <span>Free Sample</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

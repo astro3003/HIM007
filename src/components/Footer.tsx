@@ -165,21 +165,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTrackin
           <span>Privacy Policy</span>
           <span>•</span>
           <span>Terms of Service</span>
-
-          {onOpenAdmin && (
-            <button
-              type="button"
-              onClick={onOpenAdmin}
-              className={`flex items-center space-x-1 px-2.5 py-1 rounded-md border text-[11px] transition-colors cursor-pointer ${
-                isAdminActive
-                  ? 'bg-[#FF4D00] text-white border-[#FF4D00]'
-                  : 'bg-[#14171F] border-white/15 text-[#C8C4BC] hover:text-white hover:border-[#FF4D00]'
-              }`}
-            >
-              <Key className="w-3 h-3" />
-              <span>{isAdminActive ? 'Admin Active' : 'Admin Login'}</span>
-            </button>
-          )}
         </div>
       </div>
     </footer>

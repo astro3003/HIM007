@@ -1,6 +1,9 @@
+import 'dotenv/config';
+import crypto from 'crypto';
 import express from 'express';
 import path from 'path';
 import fs from 'fs/promises';
+import Razorpay from 'razorpay';
 import { createServer as createViteServer } from 'vite';
 import { PRODUCTS } from './src/catalog/products';
 import { INITIAL_PROMOTIONS } from './src/catalog/promotions';
@@ -322,6 +325,125 @@ async function startServer() {
       success: true,
       order: verifiedOrder,
       products: productsDatabase,
+    });
+  });
+
+  // ================= RAZORPAY STANDARD CHECKOUT ROUTES =================
+
+  app.post('/api/create-order', checkoutLimiter, async (req, res) => {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      return res.status(401).json({
+        success: false,
+        error: 'Razorpay credentials are not configured on the server.',
+      });
+    }
+
+    const { amount, currency = 'INR', receipt } = req.body || {};
+    const parsedAmount = Math.round(Number(amount));
+
+    if (!Number.isFinite(parsedAmount) || parsedAmount < 100) {
+      return res.status(400).json({
+        success: false,
+        error: 'Amount must be at least 100 paise.',
+      });
+    }
+
+    const cleanCurrency = stripHtmlTags(String(currency || 'INR'), 10).toUpperCase() || 'INR';
+    const cleanReceipt = stripHtmlTags(String(receipt || `him_rcpt_${Date.now()}`), 40);
+
+    try {
+      const razorpay = new Razorpay({
+        key_id: keyId,
+        key_secret: keySecret,
+      });
+
+      const order = await razorpay.orders.create({
+        amount: parsedAmount,
+        currency: cleanCurrency,
+        receipt: cleanReceipt,
+      });
+
+      return res.json({
+        success: true,
+        order_id: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        key_id: keyId,
+      });
+    } catch (err: any) {
+      const statusCode = Number(err?.statusCode || err?.status || 500);
+      const description =
+        err?.error?.description || err?.message || 'Failed to create Razorpay order.';
+
+      if (statusCode === 401) {
+        return res.status(401).json({
+          success: false,
+          error: description,
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        error: description,
+      });
+    }
+  });
+
+  app.post('/api/verify-payment', checkoutLimiter, async (req, res) => {
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keySecret) {
+      return res.status(401).json({
+        success: false,
+        verified: false,
+        error: 'Razorpay secret key is not configured on the server.',
+      });
+    }
+
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body || {};
+
+    if (
+      typeof razorpay_order_id !== 'string' ||
+      !razorpay_order_id.trim() ||
+      typeof razorpay_payment_id !== 'string' ||
+      !razorpay_payment_id.trim() ||
+      typeof razorpay_signature !== 'string' ||
+      !razorpay_signature.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        verified: false,
+        error: 'Missing required payment verification fields.',
+      });
+    }
+
+    const generatedSignature = crypto
+      .createHmac('sha256', keySecret)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest('hex');
+
+    const providedBuf = Buffer.from(razorpay_signature.trim(), 'utf8');
+    const expectedBuf = Buffer.from(generatedSignature, 'utf8');
+
+    const isValid =
+      providedBuf.length === expectedBuf.length &&
+      crypto.timingSafeEqual(providedBuf, expectedBuf);
+
+    if (!isValid) {
+      return res.status(400).json({
+        success: false,
+        verified: false,
+        error: 'Payment signature verification failed.',
+      });
+    }
+
+    return res.json({
+      success: true,
+      verified: true,
+      razorpay_order_id,
+      razorpay_payment_id,
     });
   });
 

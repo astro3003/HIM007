@@ -19,6 +19,7 @@ import { AdminDashboardModal, AdminTab } from './components/AdminDashboardModal'
 import { AdminAuthModal } from './components/AdminAuthModal';
 import { PrePublishMediaManagerModal } from './components/PrePublishMediaManagerModal';
 import { SampleRequestModal } from './components/SampleRequestModal';
+import { LegalPage, LegalPageType } from './components/LegalPage';
 import { Footer } from './components/Footer';
 import { 
   detectLocationAndCurrency, 
@@ -170,40 +171,75 @@ export default function App() {
   const [isDiagnosticOpen, setIsDiagnosticOpen] = useState(false);
   const [isMediaManagerOpen, setIsMediaManagerOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [activeLegalPage, setActiveLegalPage] = useState<LegalPageType | null>(null);
   const [sampleRequestProduct, setSampleRequestProduct] = useState<Product | null>(null);
   const [adminEditProductId, setAdminEditProductId] = useState<string | null>(null);
 
-  // URL Hash Synchronizer for Dedicated Product Detail Pages (#product-[id])
+  // URL Hash Synchronizer for Product Detail Pages (#product-[id]) and Legal Pages (#privacy-policy / #terms-of-service)
   useEffect(() => {
     const handleHash = () => {
       const hash = window.location.hash;
+      if (hash === '#privacy-policy') {
+        setActiveLegalPage('privacy');
+        setSelectedProduct(null);
+        return;
+      }
+      if (hash === '#terms-of-service') {
+        setActiveLegalPage('terms');
+        setSelectedProduct(null);
+        return;
+      }
       if (hash && hash.startsWith('#product-')) {
         const prodId = hash.replace('#product-', '');
         const found = products.find((p) => p.id === prodId);
         if (found) {
           setSelectedProduct(found);
+          setActiveLegalPage(null);
           return;
         }
       }
-      if (!hash || !hash.startsWith('#product-')) {
-        setSelectedProduct(null);
+      setSelectedProduct(null);
+      setActiveLegalPage(null);
+      if (hash && hash.length > 1) {
+        const targetId = hash.slice(1);
+        setTimeout(() => {
+          const el = document.getElementById(targetId);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 60);
       }
     };
 
     handleHash();
     window.addEventListener('popstate', handleHash);
-    return () => window.removeEventListener('popstate', handleHash);
+    window.addEventListener('hashchange', handleHash);
+    return () => {
+      window.removeEventListener('popstate', handleHash);
+      window.removeEventListener('hashchange', handleHash);
+    };
   }, [products]);
 
   const handleOpenProduct = (product: Product) => {
+    setActiveLegalPage(null);
     setSelectedProduct(product);
     window.location.hash = `product-${product.id}`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCloseProduct = () => {
+  const handleOpenLegalPage = (page: LegalPageType) => {
     setSelectedProduct(null);
-    if (window.location.hash.startsWith('#product-')) {
+    setActiveLegalPage(page);
+    window.location.hash = page === 'privacy' ? 'privacy-policy' : 'terms-of-service';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCloseSubViews = () => {
+    setSelectedProduct(null);
+    setActiveLegalPage(null);
+    if (
+      window.location.hash.startsWith('#product-') ||
+      window.location.hash === '#privacy-policy' ||
+      window.location.hash === '#terms-of-service'
+    ) {
       window.history.pushState(null, '', window.location.pathname);
     }
   };
@@ -703,7 +739,7 @@ export default function App() {
         onOpenDiagnostic={() => setIsDiagnosticOpen(true)}
         onTriggerVoice={handleTriggerVoice}
         isVoicePlaying={isVoicePlaying}
-        onNavigateHome={handleCloseProduct}
+        onNavigateHome={handleCloseSubViews}
       />
 
       {/* HIM Signal Orange Announcement Banner */}
@@ -722,11 +758,17 @@ export default function App() {
         <ProductDetailPage
           product={selectedProduct}
           currency={currentCurrency}
-          onBack={handleCloseProduct}
+          onBack={handleCloseSubViews}
           onAddToCart={(product, qty, shade) => handleAddToCart(product, qty, shade)}
           onQuickBuy={(product, qty, shade) => handleQuickBuy(product, qty, shade)}
           onSelectProduct={handleOpenProduct}
           allProducts={products}
+        />
+      ) : activeLegalPage ? (
+        <LegalPage
+          page={activeLegalPage}
+          onSwitchPage={handleOpenLegalPage}
+          onBack={handleCloseSubViews}
         />
       ) : (
         <main>
@@ -806,6 +848,8 @@ export default function App() {
       <Footer
         onOpenIngredients={() => setIsIngredientsOpen(true)}
         onOpenTracking={() => setIsTrackingOpen(true)}
+        onOpenPrivacy={() => handleOpenLegalPage('privacy')}
+        onOpenTerms={() => handleOpenLegalPage('terms')}
       />
 
       {/* Slide-over Cart Drawer */}

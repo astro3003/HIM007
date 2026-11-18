@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { Mail, Check, ShieldCheck, Globe, ArrowRight, Key } from 'lucide-react';
+import { Mail, Check, ShieldCheck, Globe, ArrowRight, Instagram, Linkedin, Facebook } from 'lucide-react';
 
 interface FooterProps {
   onOpenIngredients: () => void;
   onOpenTracking: () => void;
+  onOpenPrivacy: () => void;
+  onOpenTerms: () => void;
   onOpenAdmin?: () => void;
   isAdminActive?: boolean;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTracking, onOpenAdmin, isAdminActive }) => {
+export const Footer: React.FC<FooterProps> = ({
+  onOpenIngredients,
+  onOpenTracking,
+  onOpenPrivacy,
+  onOpenTerms,
+}) => {
   const [emailInput, setEmailInput] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -96,7 +103,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTrackin
             Nine-piece men&apos;s skincare, hair styling, beard conditioning, and Pour Homme Eau De Parfum range calibrated for Indian heat, sweat, and hard water.
           </p>
 
-          <div className="flex items-center space-x-4 text-xs text-[#C8C4BC]">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[#C8C4BC]">
             <span className="flex items-center">
               <ShieldCheck className="w-4 h-4 text-[#22C55E] mr-1.5" />
               0% Sulfates &amp; Parabens
@@ -105,6 +112,39 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTrackin
               <Globe className="w-4 h-4 text-[#FF4D00] mr-1.5" />
               Made in India
             </span>
+          </div>
+
+          <div className="pt-1 flex flex-wrap items-center gap-3">
+            <a
+              href="https://www.instagram.com/him.mard/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow HIM on Instagram @him.mard"
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#14171F] hover:bg-[#FF4D00] border border-white/15 hover:border-[#FF4D00] text-white text-xs font-semibold rounded-md transition-colors"
+            >
+              <Instagram className="w-4 h-4" />
+              <span>@him.mard</span>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/himhim/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow HIM on LinkedIn"
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#14171F] hover:bg-[#FF4D00] border border-white/15 hover:border-[#FF4D00] text-white text-xs font-semibold rounded-md transition-colors"
+            >
+              <Linkedin className="w-4 h-4" />
+              <span>LinkedIn</span>
+            </a>
+            <a
+              href="https://www.facebook.com/share/1dRYMb3x8G/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow HIM on Facebook"
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-[#14171F] hover:bg-[#FF4D00] border border-white/15 hover:border-[#FF4D00] text-white text-xs font-semibold rounded-md transition-colors"
+            >
+              <Facebook className="w-4 h-4" />
+              <span>Facebook</span>
+            </a>
           </div>
         </div>
 
@@ -136,7 +176,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTrackin
           </ul>
         </div>
 
-        {/* Customer Care */}
+        {/* Customer Care & Legal */}
         <div className="space-y-3">
           <h4 className="font-mono font-semibold text-[11px] uppercase tracking-wider text-white">Customer Care</h4>
           <ul className="space-y-2 text-xs text-[#C8C4BC]">
@@ -146,9 +186,21 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTrackin
               </button>
             </li>
             <li><a href="#faq-deal-section" className="hover:text-[#FF4D00] transition-colors">FAQs</a></li>
-            <li><span>Free Shipping over ₹999</span></li>
-            <li><span>30-Day Returns</span></li>
-            <li><span>care@heisman.in</span></li>
+            <li>
+              <button type="button" onClick={onOpenTerms} className="hover:text-[#FF4D00] transition-colors text-left cursor-pointer">
+                30-Day Returns &amp; Terms
+              </button>
+            </li>
+            <li>
+              <button type="button" onClick={onOpenPrivacy} className="hover:text-[#FF4D00] transition-colors text-left cursor-pointer">
+                Privacy Policy
+              </button>
+            </li>
+            <li>
+              <a href="mailto:care@heisman.in" className="hover:text-[#FF4D00] transition-colors">
+                care@heisman.in
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -159,12 +211,54 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIngredients, onOpenTrackin
           © {new Date().getFullYear()} HIM — He Is Man. Formulated and crafted in India. All rights reserved.
         </div>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <a
+            href="https://www.instagram.com/him.mard/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-white hover:text-[#FF4D00] transition-colors font-medium"
+          >
+            <Instagram className="w-3.5 h-3.5" />
+            <span>Instagram</span>
+          </a>
+          <span>•</span>
+          <a
+            href="https://www.linkedin.com/company/himhim/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-white hover:text-[#FF4D00] transition-colors font-medium"
+          >
+            <Linkedin className="w-3.5 h-3.5" />
+            <span>LinkedIn</span>
+          </a>
+          <span>•</span>
+          <a
+            href="https://www.facebook.com/share/1dRYMb3x8G/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-white hover:text-[#FF4D00] transition-colors font-medium"
+          >
+            <Facebook className="w-3.5 h-3.5" />
+            <span>Facebook</span>
+          </a>
+          <span>•</span>
           <span>100% Secure Checkout</span>
           <span>•</span>
-          <span>Privacy Policy</span>
+          <button
+            type="button"
+            onClick={onOpenPrivacy}
+            className="text-white hover:text-[#FF4D00] transition-colors font-medium cursor-pointer"
+          >
+            Privacy Policy
+          </button>
           <span>•</span>
-          <span>Terms of Service</span>
+          <button
+            type="button"
+            onClick={onOpenTerms}
+            className="text-white hover:text-[#FF4D00] transition-colors font-medium cursor-pointer"
+          >
+            Terms of Service
+          </button>
         </div>
       </div>
     </footer>

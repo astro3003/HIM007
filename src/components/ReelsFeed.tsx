@@ -77,7 +77,7 @@ export const ReelsFeed: React.FC<ReelsFeedProps> = ({
 
           <div className="flex items-center space-x-3 text-xs">
             <span className="px-4 py-2 bg-white border border-[#E7E7E7] rounded-full text-[#0A0029] font-semibold shadow-xs">
-              Tag <strong className="text-[#E31B23]">@him.grooming</strong> to be featured
+              Tag <strong className="text-[#E31B23]">@him.mard</strong> to be featured
             </span>
           </div>
         </div>

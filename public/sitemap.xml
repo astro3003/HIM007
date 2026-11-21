@@ -1,57 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/</loc>
-    <lastmod>2026-11-17</lastmod>
+    <loc>https://heisman.in/</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/assets/aistudio/Men_posing_with_motorcycle_products_cb7d58eb_b75f4f77.jpg</image:loc>
-      <image:title>HIM — He Is Man | Men's Skincare, Hair, Beard &amp; Fragrance</image:title>
-      <image:caption>9-piece men's grooming range formulated in India</image:caption>
-    </image:image>
   </url>
   <url>
-    <loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/#products-section</loc>
-    <lastmod>2026-11-17</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://heisman.in/product/prod-him-scrub-bar</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.95</priority>
-    <image:image>
-      <image:loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/assets/aistudio/Serum_bottle_and_box_packaging_fa6ed9b8_82a165c1.jpg</image:loc>
-      <image:title>HIM Men's Face Brightening Serum (Vitamin C &amp; Niacinamide)</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/assets/aistudio/WhatsApp_Image_2026-10-15_at_00.41.45.jpeg_20261015004503_40964ee5.jpg</image:loc>
-      <image:title>HIM Men's Deep Cleanse &amp; Muscle Recovery Scrub Bar</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/assets/aistudio/Bottle_with_black_and_orange_4ac4c39e_75c87168.jpg</image:loc>
-      <image:title>HIM Hair Oil (Sweet Almond &amp; Rosemary)</image:title>
-    </image:image>
   </url>
   <url>
-    <loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/#campaign-banners-section</loc>
-    <lastmod>2026-11-17</lastmod>
+    <loc>https://heisman.in/product/prod-him-ayurvedic-detan-soap</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://heisman.in/product/prod-him-anti-acne-soap</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://heisman.in/product/prod-him-face-wash</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/#science-lab-section</loc>
-    <lastmod>2026-11-17</lastmod>
+    <loc>https://heisman.in/product/prod-him-hair-clay</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/#reviews-section</loc>
-    <lastmod>2026-11-17</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <loc>https://heisman.in/product/prod-him-beard-serum</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://ais-dev-2vvsyeqlkpixpadibhvyhg-542552935355.asia-east1.run.app/#faq-deal-section</loc>
-    <lastmod>2026-11-17</lastmod>
+    <loc>https://heisman.in/product/prod-him-hair-oil</loc>
+    <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://heisman.in/product/prod-him-face-brightening-serum</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://heisman.in/product/prod-him-eau-de-parfum</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://heisman.in/privacy-policy</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://heisman.in/terms-of-service</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

@@ -4,7 +4,15 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api/robots"
+    },
+    {
+      "source": "/((?!api/|google156d214a8cf4099a\\.html).*)",
       "destination": "/index.html"
     }
   ]

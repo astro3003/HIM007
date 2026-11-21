@@ -31,6 +31,7 @@ import { backendService } from './services/api';
 import { Zap, Camera, ShieldAlert } from 'lucide-react';
 import { isAIStudioEditMode } from './utils/environment';
 import { isSoapAvailableForSale, SELLABLE_SOAP_IDS } from './utils/sellable';
+import { syncPageSeo } from './utils/seo';
 
 const FREE_SHIPPING_THRESHOLD_BASE = 50; // USD
 
@@ -175,20 +176,33 @@ export default function App() {
   const [sampleRequestProduct, setSampleRequestProduct] = useState<Product | null>(null);
   const [adminEditProductId, setAdminEditProductId] = useState<string | null>(null);
 
-  // URL Hash Synchronizer for Product Detail Pages (#product-[id]) and Legal Pages (#privacy-policy / #terms-of-service)
+  // URL Path & Hash Synchronizer for Product Detail Pages (/product/:id) and Legal Pages (/privacy-policy, /terms-of-service)
   useEffect(() => {
-    const handleHash = () => {
+    const handleRoute = () => {
+      const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
       const hash = window.location.hash;
-      if (hash === '#privacy-policy') {
+
+      if (pathname === '/privacy-policy' || hash === '#privacy-policy') {
         setActiveLegalPage('privacy');
         setSelectedProduct(null);
         return;
       }
-      if (hash === '#terms-of-service') {
+      if (pathname === '/terms-of-service' || hash === '#terms-of-service') {
         setActiveLegalPage('terms');
         setSelectedProduct(null);
         return;
       }
+
+      if (pathname.startsWith('/product/')) {
+        const prodId = decodeURIComponent(pathname.replace('/product/', ''));
+        const found = products.find((p) => p.id === prodId);
+        if (found) {
+          setSelectedProduct(found);
+          setActiveLegalPage(null);
+          return;
+        }
+      }
+
       if (hash && hash.startsWith('#product-')) {
         const prodId = hash.replace('#product-', '');
         const found = products.find((p) => p.id === prodId);
@@ -198,6 +212,7 @@ export default function App() {
           return;
         }
       }
+
       setSelectedProduct(null);
       setActiveLegalPage(null);
       if (hash && hash.length > 1) {
@@ -209,38 +224,78 @@ export default function App() {
       }
     };
 
-    handleHash();
-    window.addEventListener('popstate', handleHash);
-    window.addEventListener('hashchange', handleHash);
+    handleRoute();
+    window.addEventListener('popstate', handleRoute);
+    window.addEventListener('hashchange', handleRoute);
     return () => {
-      window.removeEventListener('popstate', handleHash);
-      window.removeEventListener('hashchange', handleHash);
+      window.removeEventListener('popstate', handleRoute);
+      window.removeEventListener('hashchange', handleRoute);
     };
   }, [products]);
+
+  // Keep Google canonical URL, page title, meta description & OpenGraph tags synced per view
+  useEffect(() => {
+    if (selectedProduct) {
+      syncPageSeo({
+        title: `${selectedProduct.name} | HIM — He Is Man`,
+        description: `${selectedProduct.tagline} Formulated in India by HIM — He Is Man (HIM Men's Grooming Brand).`,
+        path: `/product/${selectedProduct.id}`,
+        image: selectedProduct.fieldImg,
+        type: 'product',
+      });
+      return;
+    }
+
+    if (activeLegalPage === 'privacy') {
+      syncPageSeo({
+        title: 'Privacy Policy | HIM — He Is Man',
+        description:
+          'Read the HIM — He Is Man Privacy Policy covering DPDP Act 2023 compliance, Razorpay payment security, order fulfillment, and free home sample data handling.',
+        path: '/privacy-policy',
+        type: 'article',
+      });
+      return;
+    }
+
+    if (activeLegalPage === 'terms') {
+      syncPageSeo({
+        title: 'Terms of Service | HIM — He Is Man',
+        description:
+          'Review HIM — He Is Man Terms of Service covering our 3-soap storefront, free home sample program, Razorpay & COD checkout, India delivery, and 30-day returns.',
+        path: '/terms-of-service',
+        type: 'article',
+      });
+      return;
+    }
+
+    syncPageSeo({
+      title: "HIM — He Is Man | Official Men's Grooming & Skincare Brand",
+      description:
+        "Official store of HIM (He Is Man / HIM Mard) — India's men's grooming & skincare brand. Shop scrub, de-tan & anti-acne soaps or claim free home samples.",
+      path: '/',
+      type: 'website',
+    });
+  }, [selectedProduct, activeLegalPage]);
 
   const handleOpenProduct = (product: Product) => {
     setActiveLegalPage(null);
     setSelectedProduct(product);
-    window.location.hash = `product-${product.id}`;
+    window.history.pushState(null, '', `/product/${product.id}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenLegalPage = (page: LegalPageType) => {
     setSelectedProduct(null);
     setActiveLegalPage(page);
-    window.location.hash = page === 'privacy' ? 'privacy-policy' : 'terms-of-service';
+    window.history.pushState(null, '', page === 'privacy' ? '/privacy-policy' : '/terms-of-service');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCloseSubViews = () => {
     setSelectedProduct(null);
     setActiveLegalPage(null);
-    if (
-      window.location.hash.startsWith('#product-') ||
-      window.location.hash === '#privacy-policy' ||
-      window.location.hash === '#terms-of-service'
-    ) {
-      window.history.pushState(null, '', window.location.pathname);
+    if (window.location.pathname !== '/' || window.location.hash) {
+      window.history.pushState(null, '', '/');
     }
   };
 

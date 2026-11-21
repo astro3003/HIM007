@@ -825,23 +825,109 @@ async function startServer() {
     res.status(404).json({ success: false, error: 'API endpoint not found.' });
   });
 
+  // Dynamic Google Search SEO endpoints (/robots.txt & /sitemap.xml) resolved to live domain origin
+  const resolvePublicOrigin = (req: express.Request): string => {
+    const configured = process.env.SITE_URL || process.env.PUBLIC_SITE_URL;
+    if (configured && /^https?:\/\//i.test(configured.trim())) {
+      return configured.trim().replace(/\/+$/, '');
+    }
+    const proto = String(req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0].trim();
+    const host = String(req.headers['x-forwarded-host'] || req.get('host') || `localhost:${PORT}`).split(',')[0].trim();
+    return `${proto}://${host}`;
+  };
+
+  const escapeXml = (value: string): string =>
+    value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+
+  app.get('/google156d214a8cf4099a.html', (_req, res) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.status(200).send('google-site-verification: google156d214a8cf4099a.html');
+  });
+
+  app.get('/robots.txt', (req, res) => {
+    const origin = resolvePublicOrigin(req);
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(
+      `# robots.txt for HIM — He Is Man (HIM Men's Grooming & Skincare Brand)\n` +
+        `User-agent: Googlebot\nAllow: /\nDisallow: /api/\n\n` +
+        `User-agent: *\nAllow: /\nDisallow: /api/\n\n` +
+        `Sitemap: ${origin}/sitemap.xml\n`
+    );
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    const origin = resolvePublicOrigin(req);
+    const lastmod = new Date().toISOString().split('T')[0];
+
+    const productUrls = productsDatabase
+      .map((p: any) => {
+        const imgUrl = p.fieldImg
+          ? p.fieldImg.startsWith('http')
+            ? p.fieldImg
+            : `${origin}${p.fieldImg.startsWith('/') ? p.fieldImg : `/${p.fieldImg}`}`
+          : '';
+        return `  <url>
+    <loc>${escapeXml(`${origin}/product/${p.id}`)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>${
+      imgUrl
+        ? `
+    <image:image>
+      <image:loc>${escapeXml(imgUrl)}</image:loc>
+      <image:title>${escapeXml(String(p.name || 'HIM Product'))}</image:title>
+    </image:image>`
+        : ''
+    }
+  </url>`;
+      })
+      .join('\n');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>${escapeXml(`${origin}/`)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>${escapeXml(`${origin}/assets/aistudio/Men_posing_with_motorcycle_products_cb7d58eb_b75f4f77.jpg`)}</image:loc>
+      <image:title>HIM — He Is Man | Official Men&apos;s Grooming &amp; Skincare Brand</image:title>
+      <image:caption>HIM (He Is Man / HIM Mard) men&apos;s skincare, soap, hair, beard and fragrance range formulated in India</image:caption>
+    </image:image>
+  </url>
+${productUrls}
+  <url>
+    <loc>${escapeXml(`${origin}/privacy-policy`)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>${escapeXml(`${origin}/terms-of-service`)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
+`;
+
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(xml);
+  });
+
   // Static public assets (cached to prevent repeated full-res image re-fetches)
   app.use(express.static(path.join(process.cwd(), 'public'), { maxAge: '7d', etag: true }));
 
   if (process.env.NODE_ENV !== 'production') {
-    let viteMiddleware: express.RequestHandler | null = null;
-    app.use((req, res, next) => {
-      if (viteMiddleware) {
-        return viteMiddleware(req, res, next);
-      }
-      res.setHeader('Retry-After', '1');
-      return res.status(503).send('<!doctype html><html><head><meta http-equiv="refresh" content="1"></head><body style="background:#0B0D12;color:#F6F4F0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">Starting HIM Storefront...</body></html>');
-    });
-
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`HIM Server listening on http://0.0.0.0:${PORT} (initializing Vite...)`);
-    });
-
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
@@ -849,13 +935,34 @@ async function startServer() {
       },
       appType: 'spa',
     });
-    viteMiddleware = vite.middlewares;
-    console.log(`HIM Vite dev middleware ready on http://0.0.0.0:${PORT}`);
+    app.use(vite.middlewares);
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`HIM Dev Server ready on http://0.0.0.0:${PORT}`);
+    });
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.get('*', async (_req, res) => {
+      try {
+        const indexPath = path.join(distPath, 'index.html');
+        const verification = (process.env.GOOGLE_SITE_VERIFICATION || '').trim();
+        if (verification) {
+          let html = await fs.readFile(indexPath, 'utf-8');
+          const safeToken = verification.replace(/"/g, '&quot;');
+          if (!html.includes('google-site-verification')) {
+            html = html.replace(
+              '</head>',
+              `    <meta name="google-site-verification" content="${safeToken}" />\n  </head>`
+            );
+          }
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          return res.send(html);
+        }
+        return res.sendFile(indexPath);
+      } catch {
+        return res.sendFile(path.join(distPath, 'index.html'));
+      }
     });
 
     app.listen(PORT, '0.0.0.0', () => {

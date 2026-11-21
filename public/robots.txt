@@ -1,7 +1,10 @@
-# robots.txt for HIM Natural Grooming
+# robots.txt for HIM — He Is Man (HIM Men's Grooming & Skincare Brand)
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
 User-agent: *
 Allow: /
 Disallow: /api/
 
-# Sitemap location
 Sitemap: /sitemap.xml

@@ -1,4 +1,4 @@
-# robots.txt for HIM — He Is Man (HIM Men's Grooming & Skincare Brand)
+# robots.txt for HIM — He Is Man (He Is Mard | Men's Grooming & Skincare Brand)
 User-agent: Googlebot
 Allow: /
 Disallow: /api/
@@ -7,4 +7,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: /sitemap.xml
+Sitemap: https://www.heismard.com/sitemap.xml

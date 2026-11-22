@@ -6,6 +6,7 @@ export interface SeoConfig {
   type?: 'website' | 'product' | 'article';
 }
 
+const DEFAULT_SITE_URL = 'https://www.heismard.com';
 const DEFAULT_IMAGE = '/assets/aistudio/Men_posing_with_motorcycle_products_cb7d58eb_b75f4f77.jpg';
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
@@ -39,7 +40,11 @@ export function syncPageSeo({
 }: SeoConfig) {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
-  const origin = window.location.origin;
+  const configuredOrigin = (import.meta as any).env?.VITE_SITE_URL;
+  const origin =
+    typeof configuredOrigin === 'string' && /^https?:\/\//i.test(configuredOrigin.trim())
+      ? configuredOrigin.trim().replace(/\/+$/, '')
+      : DEFAULT_SITE_URL;
   const cleanPath = path ?? window.location.pathname ?? '/';
   const canonicalUrl = `${origin}${cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`}`;
   const absoluteImage = image.startsWith('http')

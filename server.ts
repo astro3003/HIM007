@@ -826,14 +826,12 @@ async function startServer() {
   });
 
   // Dynamic Google Search SEO endpoints (/robots.txt & /sitemap.xml) resolved to live domain origin
-  const resolvePublicOrigin = (req: express.Request): string => {
+  const resolvePublicOrigin = (): string => {
     const configured = process.env.SITE_URL || process.env.PUBLIC_SITE_URL;
     if (configured && /^https?:\/\//i.test(configured.trim())) {
       return configured.trim().replace(/\/+$/, '');
     }
-    const proto = String(req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0].trim();
-    const host = String(req.headers['x-forwarded-host'] || req.get('host') || `localhost:${PORT}`).split(',')[0].trim();
-    return `${proto}://${host}`;
+    return 'https://www.heismard.com';
   };
 
   const escapeXml = (value: string): string =>
@@ -849,20 +847,20 @@ async function startServer() {
     res.status(200).send('google-site-verification: google156d214a8cf4099a.html');
   });
 
-  app.get('/robots.txt', (req, res) => {
-    const origin = resolvePublicOrigin(req);
+  app.get('/robots.txt', (_req, res) => {
+    const origin = resolvePublicOrigin();
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(
-      `# robots.txt for HIM — He Is Man (HIM Men's Grooming & Skincare Brand)\n` +
+      `# robots.txt for HIM — He Is Man (He Is Mard | Men's Grooming & Skincare Brand)\n` +
         `User-agent: Googlebot\nAllow: /\nDisallow: /api/\n\n` +
         `User-agent: *\nAllow: /\nDisallow: /api/\n\n` +
         `Sitemap: ${origin}/sitemap.xml\n`
     );
   });
 
-  app.get('/sitemap.xml', (req, res) => {
-    const origin = resolvePublicOrigin(req);
+  app.get('/sitemap.xml', (_req, res) => {
+    const origin = resolvePublicOrigin();
     const lastmod = new Date().toISOString().split('T')[0];
 
     const productUrls = productsDatabase

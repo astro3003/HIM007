@@ -1,73 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://heisman.in/</loc>
+    <loc>https://www.heismard.com/</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.heismard.com/assets/aistudio/Men_posing_with_motorcycle_products_cb7d58eb_b75f4f77.jpg</image:loc>
+      <image:title>HIM — He Is Man | Official Men&apos;s Grooming &amp; Skincare Brand</image:title>
+      <image:caption>HIM (He Is Man / He Is Mard) men&apos;s skincare, soap, hair, beard and fragrance range formulated in India</image:caption>
+    </image:image>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-scrub-bar</loc>
+    <loc>https://www.heismard.com/product/prod-him-scrub-bar</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.heismard.com/assets/aistudio/WhatsApp_Image_2026-10-15_at_00.41.45.jpeg_20261015004503_40964ee5.jpg</image:loc>
+      <image:title>HIM Men&apos;s Deep Cleanse &amp; Muscle Recovery Scrub Bar</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-ayurvedic-detan-soap</loc>
+    <loc>https://www.heismard.com/product/prod-him-ayurvedic-detan-soap</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.heismard.com/assets/aistudio/WhatsApp_Image_2026-10-15_at_00.41.44_2K_20261015005021_b1ec74ec.jpg</image:loc>
+      <image:title>HIM Ayurvedic De-Tan Soap</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-anti-acne-soap</loc>
+    <loc>https://www.heismard.com/product/prod-him-anti-acne-soap</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://www.heismard.com/assets/aistudio/WhatsApp_Image_2026-10-15_at_00.41.44.jpeg_2K_20261015004821_f235a5af.jpg</image:loc>
+      <image:title>HIM Men&apos;s Anti-Acne &amp; Deep Pore Clarifying Soap</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-face-wash</loc>
+    <loc>https://www.heismard.com/product/prod-him-face-wash</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-hair-clay</loc>
+    <loc>https://www.heismard.com/product/prod-him-hair-clay</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-beard-serum</loc>
+    <loc>https://www.heismard.com/product/prod-him-beard-serum</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-hair-oil</loc>
+    <loc>https://www.heismard.com/product/prod-him-hair-oil</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-face-brightening-serum</loc>
+    <loc>https://www.heismard.com/product/prod-him-face-brightening-serum</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://heisman.in/product/prod-him-eau-de-parfum</loc>
+    <loc>https://www.heismard.com/product/prod-him-eau-de-parfum</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://heisman.in/privacy-policy</loc>
+    <loc>https://www.heismard.com/privacy-policy</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://heisman.in/terms-of-service</loc>
+    <loc>https://www.heismard.com/terms-of-service</loc>
     <lastmod>2026-11-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

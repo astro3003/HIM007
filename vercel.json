@@ -12,8 +12,17 @@
       "destination": "/api/robots"
     },
     {
-      "source": "/((?!api/|google156d214a8cf4099a\\.html).*)",
+      "source": "/((?!api/|assets/|images/|og-thumbnail\\.jpg|favicon\\.svg|google156d214a8cf4099a\\.html).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/og-thumbnail.jpg",
+      "headers": [
+        { "key": "Content-Type", "value": "image/jpeg" },
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
     }
   ]
 }

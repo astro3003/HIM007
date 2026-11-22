@@ -7,7 +7,7 @@ export interface SeoConfig {
 }
 
 const DEFAULT_SITE_URL = 'https://www.heismard.com';
-const DEFAULT_IMAGE = '/assets/aistudio/Men_posing_with_motorcycle_products_cb7d58eb_b75f4f77.jpg';
+const DEFAULT_IMAGE = '/og-thumbnail.jpg?v=2';
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
   if (typeof document === 'undefined') return;
@@ -60,6 +60,7 @@ export function syncPageSeo({
   upsertMeta('property', 'og:title', title);
   upsertMeta('property', 'og:description', description);
   upsertMeta('property', 'og:image', absoluteImage);
+  upsertMeta('property', 'og:image:secure_url', absoluteImage);
 
   upsertMeta('name', 'twitter:title', title);
   upsertMeta('name', 'twitter:description', description);

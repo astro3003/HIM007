@@ -272,7 +272,7 @@ export default function App() {
     syncPageSeo({
       title: "HIM — He Is Man | Official Men's Grooming & Skincare Brand",
       description:
-        "Official store of HIM (He Is Man / HIM Mard) — India's men's grooming & skincare brand. Shop scrub, de-tan & anti-acne soaps or claim free home samples.",
+        'Just 7 essentials crafted for the Indian Man. Shop HIM Scrub, De-Tan & Anti-Acne Soaps or claim free home samples. Free shipping over ₹999.',
       path: '/',
       type: 'website',
     });

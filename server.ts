@@ -330,9 +330,52 @@ async function startServer() {
 
   // ================= RAZORPAY STANDARD CHECKOUT ROUTES =================
 
+  const cleanEnvVal = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
+  const isValidRazorpayKeyId = (val: string) => /^rzp_(test|live)_[A-Za-z0-9]+$/.test(val);
+
+  async function resolveRazorpayCredentials(): Promise<{
+    keyId: string;
+    keySecret: string;
+    invalidFormat: boolean;
+  }> {
+    let keyId = cleanEnvVal(process.env.RAZORPAY_KEY_ID);
+    let keySecret = cleanEnvVal(process.env.RAZORPAY_KEY_SECRET);
+
+    if (isValidRazorpayKeyId(keyId) && keySecret.length >= 16) {
+      return { keyId, keySecret, invalidFormat: false };
+    }
+
+    // Fallback to local .env if host env vars contain an invalid placeholder or razorpay.me URL
+    try {
+      const dotenv = await import('dotenv');
+      const rawEnv = await fs.readFile(path.join(process.cwd(), '.env'), 'utf-8');
+      const parsed = dotenv.parse(rawEnv);
+      const fileKeyId = cleanEnvVal(parsed.RAZORPAY_KEY_ID);
+      const fileKeySecret = cleanEnvVal(parsed.RAZORPAY_KEY_SECRET);
+      if (isValidRazorpayKeyId(fileKeyId) && fileKeySecret.length >= 16) {
+        return { keyId: fileKeyId, keySecret: fileKeySecret, invalidFormat: false };
+      }
+    } catch {
+      // No local .env available (e.g. serverless production)
+    }
+
+    return {
+      keyId,
+      keySecret,
+      invalidFormat: Boolean(keyId) && !isValidRazorpayKeyId(keyId),
+    };
+  }
+
   app.post('/api/create-order', checkoutLimiter, async (req, res) => {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const { keyId, keySecret, invalidFormat } = await resolveRazorpayCredentials();
+
+    if (invalidFormat) {
+      return res.status(401).json({
+        success: false,
+        error:
+          'Invalid RAZORPAY_KEY_ID format. Use your Razorpay API Key ID starting with rzp_test_ or rzp_live_ (not a razorpay.me payment link).',
+      });
+    }
 
     if (!keyId || !keySecret) {
       return res.status(401).json({
@@ -381,7 +424,8 @@ async function startServer() {
       if (statusCode === 401) {
         return res.status(401).json({
           success: false,
-          error: description,
+          error:
+            'Razorpay authentication failed. Verify that RAZORPAY_KEY_ID (rzp_test_... / rzp_live_...) and RAZORPAY_KEY_SECRET match your active Razorpay Dashboard API keys.',
         });
       }
 
@@ -393,7 +437,7 @@ async function startServer() {
   });
 
   app.post('/api/verify-payment', checkoutLimiter, async (req, res) => {
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const { keySecret } = await resolveRazorpayCredentials();
     if (!keySecret) {
       return res.status(401).json({
         success: false,
@@ -687,6 +731,122 @@ async function startServer() {
     }
 
     res.json({ success: true, sampleRequest: entry });
+  });
+
+  // Mobile Visitor WhatsApp Follow-Up ("Take another look at HIM — just 7 products made for the Indian Man.")
+  app.post('/api/whatsapp-followup', checkoutLimiter, async (req, res) => {
+    const body = req.body || {};
+    const digits = String(body.phone || '').replace(/\D/g, '');
+    const normalizedPhone =
+      digits.length === 10 ? `91${digits}` : digits.length >= 11 && digits.length <= 15 ? digits : '';
+
+    if (!normalizedPhone) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please enter a valid 10-digit WhatsApp mobile number.',
+      });
+    }
+
+    const cleanName = stripHtmlTags(String(body.name || ''), 80);
+    const source = stripHtmlTags(String(body.source || 'mobile_visit'), 60);
+    const baseText =
+      'Take another look at HIM — just 7 products made for the Indian Man. Explore now: https://www.heismard.com/';
+    const messageText = cleanName ? `Hi ${cleanName}, ${baseText}` : baseText;
+
+    // Persist opt-in mobile WhatsApp lead locally
+    try {
+      const waFile = path.join(DATA_DIR, 'whatsapp-leads.json');
+      await fs.mkdir(DATA_DIR, { recursive: true });
+      let list: any[] = [];
+      try {
+        const raw = await fs.readFile(waFile, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) list = parsed;
+      } catch {}
+      list.unshift({
+        phone: normalizedPhone,
+        name: cleanName,
+        source,
+        message: messageText,
+        createdAt: new Date().toISOString(),
+      });
+      await fs.writeFile(waFile, JSON.stringify(list.slice(0, 1000), null, 2), 'utf-8');
+    } catch {
+      // Safe fallback on read-only environments
+    }
+
+    const accessToken = cleanEnvVal(process.env.WHATSAPP_ACCESS_TOKEN);
+    const phoneNumberId = cleanEnvVal(process.env.WHATSAPP_PHONE_NUMBER_ID);
+    const templateName = cleanEnvVal(process.env.WHATSAPP_TEMPLATE_NAME);
+    const templateLang = cleanEnvVal(process.env.WHATSAPP_TEMPLATE_LANG) || 'en_US';
+
+    if (accessToken && phoneNumberId) {
+      const payload = templateName
+        ? {
+            messaging_product: 'whatsapp',
+            to: normalizedPhone,
+            type: 'template',
+            template: {
+              name: templateName,
+              language: { code: templateLang },
+            },
+          }
+        : {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: normalizedPhone,
+            type: 'text',
+            text: {
+              preview_url: true,
+              body: messageText,
+            },
+          };
+
+      try {
+        const waRes = await fetch(
+          `https://graph.facebook.com/v21.0/${encodeURIComponent(phoneNumberId)}/messages`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        const waData: any = await waRes.json().catch(() => ({}));
+        if (!waRes.ok) {
+          return res.status(502).json({
+            success: false,
+            delivered: false,
+            error: waData?.error?.message || 'WhatsApp Cloud API rejected the message.',
+          });
+        }
+
+        return res.json({
+          success: true,
+          delivered: true,
+          mode: 'whatsapp_cloud_api',
+          messageId: waData?.messages?.[0]?.id || null,
+          message: messageText,
+        });
+      } catch {
+        return res.status(500).json({
+          success: false,
+          delivered: false,
+          error: 'Unable to reach WhatsApp Cloud API right now.',
+        });
+      }
+    }
+
+    return res.json({
+      success: true,
+      delivered: false,
+      mode: 'deep_link_ready',
+      message: messageText,
+      whatsappUrl: `https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`,
+    });
   });
 
   // Persistent Custom Images Registry for All Sections

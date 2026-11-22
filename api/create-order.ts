@@ -5,13 +5,22 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const cleanEnvVal = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
+  const keyId = cleanEnvVal(process.env.RAZORPAY_KEY_ID);
+  const keySecret = cleanEnvVal(process.env.RAZORPAY_KEY_SECRET);
 
   if (!keyId || !keySecret) {
     return res.status(401).json({
       success: false,
       error: 'Razorpay credentials are not configured on the server.',
+    });
+  }
+
+  if (!/^rzp_(test|live)_[A-Za-z0-9]+$/.test(keyId)) {
+    return res.status(401).json({
+      success: false,
+      error:
+        'Invalid RAZORPAY_KEY_ID format. Use your Razorpay API Key ID starting with rzp_test_ or rzp_live_ (not a razorpay.me payment link).',
     });
   }
 
@@ -53,7 +62,11 @@ export default async function handler(req: any, res: any) {
       err?.error?.description || err?.message || 'Failed to create Razorpay order.';
 
     if (statusCode === 401) {
-      return res.status(401).json({ success: false, error: description });
+      return res.status(401).json({
+        success: false,
+        error:
+          'Razorpay authentication failed. Verify that RAZORPAY_KEY_ID (rzp_test_... / rzp_live_...) and RAZORPAY_KEY_SECRET match your active Razorpay Dashboard API keys.',
+      });
     }
     return res.status(500).json({ success: false, error: description });
   }

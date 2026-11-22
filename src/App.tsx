@@ -20,6 +20,7 @@ import { AdminAuthModal } from './components/AdminAuthModal';
 import { PrePublishMediaManagerModal } from './components/PrePublishMediaManagerModal';
 import { SampleRequestModal } from './components/SampleRequestModal';
 import { LegalPage, LegalPageType } from './components/LegalPage';
+import { MobileWhatsAppPrompt } from './components/MobileWhatsAppPrompt';
 import { Footer } from './components/Footer';
 import { 
   detectLocationAndCurrency, 
@@ -971,6 +972,9 @@ export default function App() {
           showToast(`FREE SAMPLE RESERVED FOR ${productName.toUpperCase()}`)
         }
       />
+
+      {/* Mobile Visitor WhatsApp Follow-Up Reminder */}
+      <MobileWhatsAppPrompt />
     </div>
   );
 }

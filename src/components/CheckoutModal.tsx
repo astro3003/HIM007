@@ -190,13 +190,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         return;
       }
 
+      const envKeyId = (
+        (import.meta as unknown as { env?: Record<string, string> })?.env?.VITE_RAZORPAY_KEY_ID || ''
+      ).trim();
       const razorpayKeyId =
-        (import.meta as unknown as { env?: Record<string, string> })?.env?.VITE_RAZORPAY_KEY_ID ||
-        createData.key_id;
+        createData.key_id || (/^rzp_(test|live)_/.test(envKeyId) ? envKeyId : '');
 
       if (!razorpayKeyId) {
         setIsProcessing(false);
-        setErrorMsg('Razorpay public key is missing.');
+        setErrorMsg('Razorpay public key is missing or invalid (must start with rzp_test_ or rzp_live_).');
         return;
       }
 
